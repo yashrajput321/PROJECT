@@ -1,4 +1,4 @@
-//Components/SearchBar
+//src/Components/SearchBar
 import React, { useContext, useEffect,useState } from 'react'
 import { ShopContext } from '../Context/ShopContext'
 import { assets } from '../assets/frontend_assets/assets'

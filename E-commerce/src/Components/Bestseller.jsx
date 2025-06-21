@@ -1,3 +1,4 @@
+//src/Components/Bestseller
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../Context/ShopContext'
 import Title from './Title'
@@ -23,7 +24,7 @@ const Bestseller = () => {
         </div>
         <div className='grid grid-cols-2 sm:grid-col-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 '>
             {bestseller.map((item,index)=>(
-                <ProductItem key={index} id={item._id} name={item.name} image={item.image} price={item.price*3} />
+                <ProductItem key={index} id={item._id} name={item.name} image={item.image} price={item.price} />
             ))}
         </div>
     </div>

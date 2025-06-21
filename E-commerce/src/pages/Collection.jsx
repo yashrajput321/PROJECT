@@ -1,4 +1,4 @@
-//pages/Collection
+//src/pages/Collection
 import React, { useContext, useEffect, useState } from 'react'; 
 import { ShopContext } from '../Context/ShopContext'
 import { assets } from '../assets/frontend_assets/assets';
@@ -136,7 +136,7 @@ const Collection = () => {
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 '>
           {
             filterProducts.map((item,index)=>(
-              <ProductItem key={index} name={item.name} id={item._id} image = {item.image} price={item.price*3} />
+              <ProductItem key={index} name={item.name} id={item._id} image = {item.image} price={item.price} />
             ))
           }
         </div>
