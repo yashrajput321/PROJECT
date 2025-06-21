@@ -7,7 +7,6 @@ import { ShopContext } from '../Context/ShopContext'
 const Navbar = () => {
     const [visible,setVisible] = useState(false)
     const {showSearch,setShowSearch} = useContext(ShopContext)
-    console.log(showSearch)
   return (
     <div className='flex items-center justify-between py-5 font-medium'>
         <Link to='/'><img src={assets.logo} className="w-36" alt="Logo" /></Link>
