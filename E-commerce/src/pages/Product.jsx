@@ -1,124 +1,288 @@
-//src/pages/Product
-import React, { useContext, useEffect, useState } from 'react'
-import {useParams} from 'react-router-dom'
-import { ShopContext } from '../Context/ShopContext'
-import { assets } from '../assets/frontend_assets/assets'
+// Product.jsx
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ShopContext } from '../Context/ShopContext';
+import { assets } from '../assets/frontend_assets/assets';
+import RelatedProducts from '../Components/RelatedProducts';
+import Toast from '../Components/Toast';
 
 const Product = () => {
+    const navigate = useNavigate();
+    const { productId } = useParams();
+    const { products, currency, addToCart } = useContext(ShopContext);
+    const [productData, setProductData] = useState(null);
+    const [image, setImage] = useState('');
+    const [size, setSize] = useState('');
+    const [quantity, setQuantity] = useState(1);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedTab, setSelectedTab] = useState('description');
+    const [showToast, setShowToast] = useState(false);
 
-  const {productId} = useParams()
-  const {products,currency} = useContext(ShopContext)
-  const [productData,setProductData] = useState(false)
-  const [image,setImage] = useState('')
-  const [size,setSize] = useState('')
-  const [quantity, setQuantity] = useState(1)
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        setIsLoading(true);
+        setSize('');
+        setQuantity(1);
+        
+        const product = products.find(item => item._id === productId);
+        if (product) {
+            setProductData(product);
+            setImage(product.image[0]);
+        }
+        setIsLoading(false);
+    }, [productId, products]);
 
-  const fetchProductData = async()=>{
+    const handleQuantity = (type) => {
+        if(type === 'decrease') {
+            quantity > 1 && setQuantity(prev => prev - 1);
+        } else {
+            setQuantity(prev => prev + 1);
+        }
+    };
 
-    products.map((item)=>{
-      if(item._id===productId){
-        setProductData(item)
-        setImage(item.image[0])
-        return null
-      }
-    })
+    const handleAddToCart = () => {
+        if (!size) {
+            alert("Please select a size");
+            return;
+        }
+        
+        const success = addToCart(productData._id, size, quantity);
+        if (success) {
+            setShowToast(true);
+            setSize('');
+            setQuantity(1);
+        }
+    };
 
-  }
-
-  // Function to handle quantity changes
-  const handleQuantity = (type) => {
-    if(type === 'decrease') {
-      quantity > 1 && setQuantity(prev => prev - 1)
-    } else {
-      setQuantity(prev => prev + 1)
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+            </div>
+        );
     }
-  }
 
-  useEffect(()=>{
-   fetchProductData();
-  },[productId,products])
+    if (!productData) {
+        return (
+            <div className="text-center py-20">
+                <h2 className="text-2xl font-bold mb-4">Product Not Found</h2>
+                <button 
+                    onClick={() => navigate('/')}
+                    className="text-blue-600 hover:underline"
+                >
+                    Return to Home
+                </button>
+            </div>
+        );
+    }
 
-  return productData ? (
-    <div className='border-t-2 pt-10 transition-opacity ease-in duration-500 opacity-100 ' >
-      {/* Product Data */}
-      <div className='flex gap-12 sm:gap-12 flex-col sm:flex-row '>
-        {/* Product Images */}
-        <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row ' >
-          <div className='flex sm:flex-col overflow-x-auto sm:overflow-y-auto justify-between sm:justify-normal sm:w-[18.7%] w-full '>
-            {
-              productData.image.map((item,index)=>(
-                <img onClick={()=>setImage(item)} src={item} key={index} alt="product image" className='w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer ' />
-              ))
-            }
-          </div>
-          <div className='w-full sm:w-[75%]'>
-            <img className='w-full h-auto' src={image} alt="Product image" />
-          </div>
-        </div>
-        {/* Product Info */}
-        <div className='flex-1'>
-            <h1 className='font-medium text-2xl mt-2'>{productData.name}</h1>
-            <div className='flex items-center gap-1 mt-2'>
-              <img src={assets.star_icon} alt="" className='w-3.5'/>
-              <img src={assets.star_icon} alt="" className='w-3.5'/>
-              <img src={assets.star_icon} alt="" className='w-3.5'/>
-              <img src={assets.star_icon} alt="" className='w-3.5'/>
-              <img src={assets.star_dull_icon} alt="" className='w-3.5'/>
-              <p className='pl-2' >(122)</p>
-            </div>
-            <p className='mt-5 text-3xl font-medium' >{currency}{productData.price}</p>
-            <p className='mt-5 text-gray-500 md:w-4/5' >{productData.description}</p>
-            <div className='flex flex-col gap-4 my-8' >
-              <p>Select Size</p>
-              <div className='flex gap-2' >
-                {
-                  productData.sizes.map((item,index)=>(
-                    <button onClick={()=>setSize(item)} key={index} className={`border py-2 px-4 bg-gray-100 ${item===size ? 'border-2 border-black':''}`} >{item}</button>
-                  ))
-                }
-              </div>
-            </div>
-            {/* Quantity and Add to Cart section */}
-            <div className='flex items-center gap-8'>
-              <div className='flex items-center gap-4'>
-                <p>Quantity:</p>
-                <div className='flex items-center gap-4 border rounded-md px-4 py-2'>
-                  <button 
-                    onClick={() => handleQuantity('decrease')}
-                    className='text-xl font-medium hover:text-gray-700'
-                  >
-                    -
-                  </button>
-                  <span className='w-8 text-center'>{quantity}</span>
-                  <button 
-                    onClick={() => handleQuantity('increase')}
-                    className='text-xl font-medium hover:text-gray-700'
-                  >
-                    +
-                  </button>
+    return (
+        <div className='max-w-7xl mx-auto px-4 py-10'>
+            <Toast 
+                message="Item added to cart successfully!"
+                show={showToast}
+                onHide={() => setShowToast(false)}
+            />
+
+            {/* Product Section */}
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-16'>
+                {/* Image Gallery */}
+                <div className='space-y-4'>
+                    {/* Main Image */}
+                    <div className='aspect-square overflow-hidden rounded-lg bg-gray-100'>
+                        <img 
+                            src={image} 
+                            alt={productData.name}
+                            className='w-full h-full object-cover object-center'
+                        />
+                    </div>
+                    
+                    {/* Thumbnail Gallery */}
+                    <div className='grid grid-cols-4 gap-4'>
+                        {productData.image.map((img, index) => (
+                            <button
+                                key={index}
+                                onClick={() => setImage(img)}
+                                className={`aspect-square rounded-md overflow-hidden ${
+                                    img === image ? 'ring-2 ring-black' : ''
+                                }`}
+                            >
+                                <img 
+                                    src={img} 
+                                    alt={`${productData.name} view ${index + 1}`}
+                                    className='w-full h-full object-cover object-center'
+                                />
+                            </button>
+                        ))}
+                    </div>
                 </div>
-              </div>
-              <button className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700'>
-                ADD TO CART
-              </button>
-            </div>
-            <hr className='mt-8 sm:w-4/5' />
-            <div className='text-sm text-gray-500 mt-5 flex flex-col gap-1' >
-              <p>100% Original Product</p>
-              <p>Cash on delivery is available on this product</p>
-              <p>Easy Return and Exchange policy within 7 days</p>
-            </div>
-        </div>
-      </div>
-      {/* description and review section */}
-      <div className='mt-20'>
-        <div className='flex'>
-          <b className='border px-5 py-3 text-sm '>Description</b>
-          <p className='border px-5 py-3 text-sm '>Review (122)</p>
-        </div>
-      </div>
-    </div>
-  ) : <div className='opacity-0'></div>
-}
 
-export default Product
+                {/* Product Details */}
+                <div className='space-y-6'>
+                    {/* Basic Info */}
+                    <div>
+                        <h1 className='text-3xl font-bold mb-2'>{productData.name}</h1>
+                        <div className='flex items-center gap-4 mb-4'>
+                            <div className='flex items-center'>
+                                {[...Array(5)].map((_, index) => (
+                                    <img 
+                                        key={index}
+                                        src={index < 4 ? assets.star_icon : assets.star_dull_icon}
+                                        alt="star"
+                                        className='w-4 h-4'
+                                    />
+                                ))}
+                            </div>
+                            <span className='text-gray-500'>(122 reviews)</span>
+                        </div>
+                        <p className='text-2xl font-bold mb-4'>
+                            {currency}{productData.price}
+                        </p>
+                        <p className='text-gray-600 leading-relaxed'>
+                            {productData.description}
+                        </p>
+                    </div>
+
+                    {/* Size Selection */}
+                    <div>
+                        <h3 className='font-medium mb-3'>Select Size</h3>
+                        <div className='flex flex-wrap gap-3'>
+                            {productData.sizes.map((sizeOption, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setSize(sizeOption)}
+                                    className={`
+                                        px-4 py-2 rounded-md text-sm font-medium transition-colors
+                                        ${size === sizeOption
+                                            ? 'bg-black text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200'
+                                        }
+                                    `}
+                                >
+                                    {sizeOption}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Quantity and Add to Cart */}
+                    <div className='space-y-4'>
+                        <div className='flex items-center gap-4'>
+                            <span className='font-medium'>Quantity:</span>
+                            <div className='flex items-center border rounded-md'>
+                                <button
+                                    onClick={() => handleQuantity('decrease')}
+                                    className='px-4 py-2 hover:bg-gray-100'
+                                >
+                                    -
+                                </button>
+                                <span className='px-4 py-2 border-x'>
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={() => handleQuantity('increase')}
+                                    className='px-4 py-2 hover:bg-gray-100'
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={handleAddToCart}
+                            className={`
+                                w-full py-3 rounded-md font-medium transition-colors
+                                ${size
+                                    ? 'bg-black text-white hover:bg-gray-900'
+                                    : 'bg-gray-200 cursor-not-allowed'
+                                }
+                            `}
+                        >
+                            {size ? 'Add to Cart' : 'Select Size'}
+                        </button>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className='border-t pt-6 space-y-2 text-sm text-gray-500'>
+                        <p>✓ Free shipping on orders over {currency}499</p>
+                        <p>✓ Free returns within 30 days</p>
+                        <p>✓ 100% Authentic products</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Description and Reviews Tabs */}
+            <div className='mb-16'>
+                <div className='flex border-b'>
+                    <button
+                        onClick={() => setSelectedTab('description')}
+                        className={`px-6 py-3 text-sm font-medium ${
+                            selectedTab === 'description'
+                                ? 'border-b-2 border-black'
+                                : 'text-gray-500'
+                        }`}
+                    >
+                        Description
+                    </button>
+                    <button
+                        onClick={() => setSelectedTab('reviews')}
+                        className={`px-6 py-3 text-sm font-medium ${
+                            selectedTab === 'reviews'
+                                ? 'border-b-2 border-black'
+                                : 'text-gray-500'
+                        }`}
+                    >
+                        Reviews (122)
+                    </button>
+                </div>
+
+                <div className='py-6'>
+                    {selectedTab === 'description' ? (
+                        <div className='prose max-w-none'>
+                            <p className='text-gray-600 leading-relaxed'>
+                                {productData.description}
+                            </p>
+                            <p className='text-gray-600 leading-relaxed mt-4'>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                                Voluptatibus quasi similique expedita nemo architecto ducimus 
+                                dignissimos dolorem deserunt dolor tempora.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className='space-y-4'>
+                            <div className='border-b pb-4'>
+                                <div className='flex items-center gap-2 mb-2'>
+                                    <div className='flex items-center'>
+                                        {[...Array(5)].map((_, index) => (
+                                            <img 
+                                                key={index}
+                                                src={index < 4 ? assets.star_icon : assets.star_dull_icon}
+                                                alt="star"
+                                                className='w-4 h-4'
+                                            />
+                                        ))}
+                                    </div>
+                                    <span className='text-sm text-gray-500'>
+                                        John D. - 2 months ago
+                                    </span>
+                                </div>
+                                <p className='text-gray-600'>
+                                    Great product! The quality is excellent and it fits perfectly.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Related Products */}
+            <RelatedProducts 
+                id={productData._id}
+                category={productData.category}
+                subCategory={productData.subCategory}
+            />
+        </div>
+    );
+};
+
+export default Product;
