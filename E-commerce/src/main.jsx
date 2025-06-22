@@ -5,11 +5,14 @@ import './index.css'
 import App from './App.jsx'
 import {BrowserRouter} from 'react-router-dom'
 import ShopContextProvider from './Context/ShopContext.jsx'
+import AddressProvider from './Context/AddressContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <ShopContextProvider>
-      <App />
+      <AddressProvider>
+        <App />
+      </AddressProvider>
     </ShopContextProvider>
   </BrowserRouter>,
 )

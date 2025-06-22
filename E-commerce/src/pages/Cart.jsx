@@ -1,10 +1,13 @@
 // Cart.jsx
 import React, { useContext } from 'react';
 import { ShopContext } from '../Context/ShopContext';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
 
 const Cart = () => {
+
+    const navigate = useNavigate();
+
     const { 
         cartItems, 
         currency, 
@@ -15,6 +18,11 @@ const Cart = () => {
         delivery_fee,
         clearCart 
     } = useContext(ShopContext);
+
+    // Handle checkout
+    const handleCheckout = () => {
+        navigate('/place-order');
+    };
 
     if (cartItems.length === 0) {
         return (
@@ -136,7 +144,7 @@ const Cart = () => {
                     <button 
                         className="w-full bg-black text-white py-3 rounded-md mt-6 
                                  hover:bg-gray-800 transition-colors font-medium"
-                        onClick={() => alert('Checkout functionality to be implemented')}
+                        onClick={handleCheckout}
                     >
                         Proceed to Checkout
                     </button>
