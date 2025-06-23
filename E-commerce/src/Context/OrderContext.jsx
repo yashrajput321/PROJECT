@@ -1,32 +1,25 @@
-// OrderContext.jsx
-import { createContext, useState } from 'react';
+// src/Context/OrderContext.jsx
+import React, { createContext, useState, useContext } from 'react';
 
-export const OrderContext = createContext();
+// Create the OrderContext
+const OrderContext = createContext();
 
-const OrderProvider = ({ children }) => {
-    const [orders, setOrders] = useState([]);
+// Provider component
+export const OrderProvider = ({ children }) => {
+  const [orders, setOrders] = useState([]);
 
-    const addOrder = (orderData) => {
-        const newOrder = {
-            id: Date.now(), // Simple ID generation
-            date: new Date().toISOString(),
-            status: 'pending',
-            ...orderData
-        };
-        setOrders(prevOrders => [...prevOrders, newOrder]);
-    };
+  const addOrder = (order) => {
+    setOrders((prevOrders) => [...prevOrders, order]);
+  };
 
-    const value = {
-        orders,
-        setOrders,
-        addOrder
-    };
-
-    return (
-        <OrderContext.Provider value={value}>
-            {children}
-        </OrderContext.Provider>
-    );
+  return (
+    <OrderContext.Provider value={{ orders, addOrder }}>
+      {children}
+    </OrderContext.Provider>
+  );
 };
 
-export default OrderProvider;
+// Custom hook for using the OrderContext
+export const useOrders = () => {
+  return useContext(OrderContext);
+};

@@ -1,12 +1,27 @@
 // src/pages/PlaceOrder.jsx
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import Title from '../Components/Title';
 import { useAddress } from '../Context/AddressContext';
 import { assets } from '../assets/frontend_assets/assets';
 import { ShopContext } from '../Context/ShopContext';
-import { useContext } from 'react';
+import Toast from '../Components/Toast';
+import { useNavigate } from 'react-router-dom';
+import { useOrders } from '../Context/OrderContext';
 
 const PlaceOrder = () => {
+
+    const navigate = useNavigate()
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const { addOrder } = useOrders();
+    
+   
+    const triggerToast = (message) => {
+        setToastMessage(message);
+        setShowToast(true);
+    };
+
+
     const { 
         cartItems, 
         currency, 
@@ -33,7 +48,7 @@ const PlaceOrder = () => {
         phone: ''
     });
     const [showSavedAddresses, setShowSavedAddresses] = useState(false);
-    const [selectedPayment, setSelectedPayment] = useState('stripe');
+    const [selectedPayment, setSelectedPayment] = useState('cod');
     const [promoCode, setPromoCode] = useState('');
     const [discount, setDiscount] = useState(0);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -50,21 +65,23 @@ const PlaceOrder = () => {
     };
 
     const handlePromoCode = () => {
-        const code = promoCode.toLowerCase().trim();
-        if (code === 'save10') {
-            setDiscount(10);
-            alert('10% discount applied!');
-        } else if (code === 'save20') {
-            setDiscount(20);
-            alert('20% discount applied!');
-        } else if (code === 'free15') {
-            setDiscount(15);
-            alert('15% discount applied!');
-        } else {
-            setDiscount(0);
-            alert('Invalid promo code');
-        }
-    };
+    const code = promoCode.toLowerCase().trim();
+    let message = '';
+    if (code === 'save10') {
+        setDiscount(10);
+        message = '10% discount applied!';
+    } else if (code === 'save20') {
+        setDiscount(20);
+        message = '20% discount applied!';
+    } else if (code === 'free15') {
+        setDiscount(15);
+        message = '15% discount applied!';
+    } else {
+        setDiscount(0);
+        message = 'Invalid promo code';
+    }
+    triggerToast(message);
+};
 
     const handleInputChange = (e) => {
         setFormData({
@@ -74,13 +91,15 @@ const PlaceOrder = () => {
     };
 
     const handleSaveAddress = () => {
-        if (formData.firstName && formData.street && formData.city) {
-            saveAddress(formData);
-            alert('Address saved successfully!');
-        } else {
-            alert('Please fill in required fields');
-        }
-    };
+    let message = '';
+    if (formData.firstName && formData.street && formData.city) {
+        saveAddress(formData);
+        message = 'Address saved successfully!';
+    } else {
+        message = 'Please fill in required fields';
+    }
+    triggerToast(message); // Use triggerToast to display the message
+};
 
     const handleSelectSavedAddress = (address) => {
         setFormData({
@@ -100,58 +119,59 @@ const PlaceOrder = () => {
 
     // Add validation and place order function
     const validateForm = () => {
-        const requiredFields = ['firstName', 'email', 'street', 'city', 'zipcode', 'phone'];
-        const missingFields = requiredFields.filter(field => !formData[field].trim());
-        
-        if (missingFields.length > 0) {
-            alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
-            return false;
-        }
-        
-        if (totalQuantity === 0) {
-            alert('Your cart is empty!');
-            return false;
-        }
-        
-        return true;
-    };
+    const requiredFields = ['firstName', 'email', 'street', 'city', 'zipcode', 'phone'];
+    const missingFields = requiredFields.filter(field => !formData[field].trim());
 
-    const handlePlaceOrder = async () => {
-        if (!validateForm()) return;
-        
-        setIsProcessing(true);
-        
-        try {
-            // Simulate order processing
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const orderData = {
-                address: formData,
-                payment: selectedPayment,
-                items: cartItems,
-                total: finalTotal.toFixed(2),
-                discount: discountAmount.toFixed(2)
-            };
-            
-            console.log('Order placed:', orderData);
-            alert(`Order placed successfully! Total: ${currency}${finalTotal.toFixed(2)}`);
-            
-            // Clear cart after successful order
-            clearCart();
-            
-            // Reset form
-            setFormData({
-                firstName: '', lastName: '', email: '', street: '',
-                city: '', state: '', zipcode: '', country: '', phone: ''
-            });
-            
-        } catch (error) {
-            alert('Order failed. Please try again.');
-            console.error('Order error:', error);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+    if (missingFields.length > 0) {
+        const message = `Please fill in the following required fields: ${missingFields.join(', ')}`;
+        triggerToast(message);
+        return false;
+    }
+
+    if (totalQuantity === 0) {
+        triggerToast('Your cart is empty!');
+        return false;
+    }
+
+    return true;
+};
+
+   const handlePlaceOrder = async () => {
+    if (!validateForm()) return;
+
+    setIsProcessing(true);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const orderData = {
+        address: formData,
+        payment: selectedPayment,
+        items: cartItems,
+        total: finalTotal.toFixed(2),
+        discount: discountAmount.toFixed(2),
+      };
+
+      addOrder(orderData); // Add order to the context
+      triggerToast(`Order placed successfully! Total: ${currency}${finalTotal.toFixed(2)}`);
+
+      setTimeout(() => {
+        navigate('/orders');
+      }, 3000);
+
+      clearCart();
+      setFormData({
+        firstName: '', lastName: '', email: '', street: '',
+        city: '', state: '', zipcode: '', country: '', phone: ''
+      });
+
+    } catch (error) {
+      triggerToast('Order failed. Please try again.');
+      console.error('Order error:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
     return (
         <div className='flex flex-col lg:flex-row justify-between gap-8 pt-5 sm:pt-14 min-h-[80vh] border-t'>
@@ -464,9 +484,9 @@ const PlaceOrder = () => {
                                 Cash on Delivery
                             </button>
                             <button
-                                onClick={() => handlePaymentSelect('cod')}
+                                onClick={() => handlePaymentSelect('razorpay')}
                                 className={`flex-1 px-3 py-2 text-sm rounded border ${
-                                    selectedPayment === 'cod'
+                                    selectedPayment === 'razorpay'
                                         ? 'border-blue-500 bg-blue-100'
                                         : 'border-gray-300'
                                 }`}
@@ -488,6 +508,13 @@ const PlaceOrder = () => {
                     </button>
                 </div>
             </div>
+            {showToast && (
+            <Toast
+                message={toastMessage}
+                show={showToast}
+                onHide={() => setShowToast(false)}
+            />
+        )}
         </div>
     );
 };
