@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import RelatedProducts from '../Components/RelatedProducts';
-import Toast from '../Components/Toast';
 
 const Product = () => {
     const navigate = useNavigate();
@@ -15,11 +14,10 @@ const Product = () => {
     const [size, setSize] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedTab, setSelectedTab] = useState('description');
-    const [showToast, setShowToast] = useState(false);
+    const [selectedTab, setSelectedTab] = useState('description'); // For description/review tabs
 
     useEffect(() => {
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0); // Scroll to top when component mounts
         setIsLoading(true);
         setSize('');
         setQuantity(1);
@@ -48,9 +46,10 @@ const Product = () => {
         
         const success = addToCart(productData._id, size, quantity);
         if (success) {
-            setShowToast(true);
-            setSize('');
-            setQuantity(1);
+            const userChoice = window.confirm('Added to cart! Would you like to view your cart?');
+            if (userChoice) {
+                navigate('/cart');
+            }
         }
     };
 
@@ -78,12 +77,6 @@ const Product = () => {
 
     return (
         <div className='max-w-7xl mx-auto px-4 py-10'>
-            <Toast 
-                message="Item added to cart successfully!"
-                show={showToast}
-                onHide={() => setShowToast(false)}
-            />
-
             {/* Product Section */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-16'>
                 {/* Image Gallery */}
@@ -152,7 +145,7 @@ const Product = () => {
                                     key={index}
                                     onClick={() => setSize(sizeOption)}
                                     className={`
-                                        px-4 py-2 rounded-md text-sm font-medium transition-colors
+                                        px-4 py-2 rounded-md text-sm font-medium
                                         ${size === sizeOption
                                             ? 'bg-black text-white'
                                             : 'bg-gray-100 hover:bg-gray-200'
@@ -191,7 +184,7 @@ const Product = () => {
                         <button
                             onClick={handleAddToCart}
                             className={`
-                                w-full py-3 rounded-md font-medium transition-colors
+                                w-full py-3 rounded-md font-medium
                                 ${size
                                     ? 'bg-black text-white hover:bg-gray-900'
                                     : 'bg-gray-200 cursor-not-allowed'
@@ -250,6 +243,7 @@ const Product = () => {
                         </div>
                     ) : (
                         <div className='space-y-4'>
+                            {/* Example Review */}
                             <div className='border-b pb-4'>
                                 <div className='flex items-center gap-2 mb-2'>
                                     <div className='flex items-center'>
@@ -270,6 +264,7 @@ const Product = () => {
                                     Great product! The quality is excellent and it fits perfectly.
                                 </p>
                             </div>
+                            {/* Add more reviews as needed */}
                         </div>
                     )}
                 </div>
