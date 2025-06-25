@@ -155,9 +155,7 @@ const PlaceOrder = () => {
       addOrder(orderData); // Add order to the context
       triggerToast(`Order placed successfully! Total: ${currency}${finalTotal.toFixed(2)}`);
 
-      setTimeout(() => {
-        navigate('/orders');
-      }, 3000);
+      navigate('/orders');
 
       clearCart();
       setFormData({
