@@ -12,10 +12,19 @@ const ColoredEdge: React.FC<EdgeProps> = ({ id, sourceX, sourceY, targetX, targe
     <>
       <BaseEdge id={id} path={edgePath} markerEnd="url(#arrowhead)" style={{ stroke: color, strokeWidth: 2 }} />
       <EdgeLabelRenderer>
-        {/* Optional: edge label, you can remove this */}
-        {/* <div style={{ position: 'absolute', transform: `translate(${sourceX}px, ${sourceY}px)`, color }}>
-          Edge
-        </div> */}
+        <div
+    style={{
+      position: 'absolute',
+      transform: `translate(-50%, -50%) translate(${(sourceX + targetX) / 2}px, ${(sourceY + targetY) / 2}px)`,
+      fontSize: 12,
+      background: 'white',
+      padding: '2px 4px',
+      borderRadius: 4,
+      color: color,
+    }}
+  >
+    {data?.label || 'Edge'}
+  </div>
       </EdgeLabelRenderer>
     </>
   );
