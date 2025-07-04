@@ -15,7 +15,7 @@ const ColoredNode: React.FC<NodeProps> = ({ data }) => {
   const nodeColor = typeColors[nodeType] || 'bg-gray-600';
 
   return (
-    <div className={`relative text-white px-4 py-2 rounded shadow-md ${nodeColor} border border-white`}>
+    <div className={`relative text-white px-4 py-2 rounded shadow-md ${nodeColor} border border-gray-400  hover:border-white`}>
       {/* Target handle on the left */}
       <Handle
         type="target"

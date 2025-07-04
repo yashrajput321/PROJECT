@@ -22,13 +22,13 @@ const NodeModal: React.FC<NodeModalProps> = ({ isOpen, onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center  z-50">
       <div className="bg-slate-800 text-white p-6 rounded shadow-lg w-80">
         <h2 className="text-lg font-bold mb-2">Add New Node</h2>
         <input
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          className="border-black p-2 w-full mb-4 rounded"
+          className="border-black p-2 w-full mb-4 rounded text-white"
           placeholder="Enter node label"
         />
         <div className="flex justify-end space-x-2">
