@@ -27,5 +27,5 @@ This is a simple and interactive **Random String Generator** built with **React*
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com//random-string-generator.git
+   git clone https://github.com/yashrajput321/PROJECT/tree/main/Assignment/06randomString
    cd random-string-generator
