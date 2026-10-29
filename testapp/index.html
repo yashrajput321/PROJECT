@@ -3,11 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <link rel="stylesheet" href="style.css">
+    <title>Word Guess</title>
 </head>
 <body>
-    Hello, This is my first instant Game
+    <div class="wrapper">
+        <h1>Guess The Word</h1>
 
+        <div class="content">
+            <input type="text" class="typing-input" maxlength="1" aria-label="Type a letter">
+
+            <div class="input"></div>
+
+            <div class="details">
+                <p class="hint">HINT: <span></span></p>
+                <p class="guess-left">Remaining Guesses: <span></span></p>
+                <p class="wrong-letter">Wrong Letter: <span></span></p>
+            </div>
+
+            <button class="reset" type="button">Reset Game</button>
+        </div>
+
+        <div class="result-card hidden" aria-live="polite">
+            <h2 class="result-title"></h2>
+            <p class="result-message"></p>
+            <button class="result-close" type="button">Close</button>
+        </div>
+    </div>
+
+    <script src="word.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

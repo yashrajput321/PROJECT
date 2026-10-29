@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quick Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+
+    <!-- Start screen -->
+    <section id="start-screen" class="screen">
+      <h1>Quick Quiz</h1>
+      <p class="lead">10 random questions. One correct answer each. Questions and answers are shuffled every round.</p>
+      <button id="start-btn" class="btn primary">Start quiz</button>
+    </section>
+
+    <!-- Quiz screen -->
+    <section id="quiz-screen" class="screen hidden">
+      <div class="top-row">
+        <span id="progress-text">Question 1 of 10</span>
+        <span id="score-text">Score: 0</span>
+      </div>
+      <div class="bar"><div id="bar-fill" class="bar-fill"></div></div>
+
+      <h2 id="question-text"></h2>
+      <div id="options" class="options"></div>
+
+      <button id="next-btn" class="btn primary hidden">Next question</button>
+    </section>
+
+    <!-- Result screen -->
+    <section id="result-screen" class="screen hidden">
+      <h1 id="final-score"></h1>
+      <p id="final-message" class="lead"></p>
+
+      <div id="review" class="review"></div>
+
+      <button id="restart-btn" class="btn primary">Play again</button>
+    </section>
+
+  </main>
+
+  <!-- data.js must load first: it defines `questions` used by function.js -->
+  <script src="data.js"></script>
+  <script src="function.js"></script>
+</body>
+</html>
